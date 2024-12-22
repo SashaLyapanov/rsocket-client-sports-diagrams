@@ -1,12 +1,31 @@
 import './style.css'
 import {useState} from "react";
+import {useNavigate} from "react-router";
 
 const AuthByCoachImitate = () => {
 
     const [id, setId] = useState();
+    const navigate = useNavigate();
 
     const onSubmit = () => {
         console.log("Id: ", id);
+        // socketClient.connect().then((rsocket) => {
+        //     rsocket.requestStream({
+        //         data: {coach_id: id},
+        //         metadata: "fetch-coach-data",
+        //     }).subscribe({
+        //         onNext: (frame) => {
+        //             console.log("Received data: ", frame.data);
+        //         },
+        //         onError: (error) => {
+        //             console.error("Error receiving data: ", error);
+        //         },
+        //         onComplete: () => {
+        //             console.log("Stream complete!");
+        //         }
+        //     });
+        // });
+        navigate(`/dashboard/${id}`);
     }
 
     return (
