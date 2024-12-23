@@ -48,7 +48,7 @@ const Dashboard = () => {
                 }).subscribe({
                     onSubscribe: sub => {
                         console.log("Start")
-                        sub.request(1);
+                        sub.request(Number.MAX_SAFE_INTEGER);
                     },
                     onNext: (payload) => {
                         console.log("Получены данные:", payload.data);
@@ -79,7 +79,7 @@ const Dashboard = () => {
     return (
         <div>
             <h1>Данные для тренера: {coachId}</h1>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
+            <p>Привеь :: {data}</p>
         </div>
     );
 
