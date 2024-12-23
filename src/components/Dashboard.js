@@ -4,32 +4,60 @@ import {JsonSerializers, RSocketClient} from "rsocket-core";
 import RSocketWebSocketClient from "rsocket-websocket-client/build";
 
 const Dashboard = () => {
-    const { coachId } = useParams();
+    const {coachId} = useParams();
     const [data, setData] = useState();
+
+    //Попытка для TCP
+    // async function createClient(options) {
+    //     const client = new RSocketTcpClient({
+    //         setup: {
+    //             dataMimeType: 'application/json',
+    //             keepAlive: 1000000, // avoid sending during test
+    //             lifetime: 100000,
+    //             metadataMimeType: 'application/json',
+    //         },
+    //         transport: new RSocketTcpClient({
+    //             host: "localhost",
+    //             port: "7000"
+    //         }),
+    //     });
+    //     return await client.connect();
+    // }
+
+    //Попытка для WebSocket
+    async function createClient(options) {
+        const client = new RSocketClient({
+            setup: {
+                dataMimeType: 'application/json',
+                keepAlive: 1000000, // avoid sending during test
+                lifetime: 100000,
+                metadataMimeType: 'application/json',
+            },
+            transport: new RSocketWebSocketClient({
+                    url: 'ws://localhost:7000',
+                },
+                JsonSerializers
+            ),
+        });
+        return await client.connect();
+    }
 
     useEffect(() => {
         // Асинхронная функция внутри useEffect
         const connectAndSubscribe = async () => {
             try {
-                const client = new RSocketClient({
-                    serializers: JsonSerializers,
-                    transport: new RSocketWebSocketClient({
-                        url: 'ws://localhost:7000',
-                    }),
-                    setup: {
-                        dataMimeType: 'application/json',
-                        metadataMimeType: 'application/json',
-                        keepAlive: 10000,
-                        lifetime: 20000,
-                    },
-                });
+                // Устанавливаем соединение для TCP
+                // const rsocket = await createClient({
+                //     host: "localhost",
+                //     port: 7000
+                // });
 
-                // Устанавливаем соединение
-                const rsocket = await client.connect();
+                // Устанавливаем соединение для WebSocket
+                const rsocket = await createClient();
 
                 // Подписываемся на поток данных
                 const subscription = rsocket.requestStream({
-                    data: { coach_id: coachId },
+                    data: {coach_id: coachId},
                     metadata: String.fromCharCode("fetch-coach-data".length) + "fetch-coach-data",
                 }).subscribe({
                     onNext: (payload) => {
