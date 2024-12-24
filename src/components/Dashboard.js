@@ -9,7 +9,6 @@ const Dashboard = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        // Асинхронная функция внутри useEffect
         const connectAndSubscribe = async () => {
             try {
                 console.log("Попытка установить соединение...");
@@ -37,9 +36,6 @@ const Dashboard = () => {
                     console.log("Bad")
                 }
 
-                // Кодируем метаданные в байты и добавляем длину
-                // const metadataString = "fetch-coach-data";
-
                 console.log(JSON.stringify({coachId}))
 
                 // Подписываемся на поток данных
@@ -54,10 +50,8 @@ const Dashboard = () => {
                     },
                     onNext: (payload) => {
                         console.log("Получены данные:", payload.data);
-                        // setData((prevData) => [...prevData, payload.data]);
-                        // const newData = JSON.parse(payload.data);
-                        // setData((prevData) => [...prevData.slice(-99), newData]);
-                        setData((prevData) => [...prevData.slice(-99), payload.data]);
+                        // setData((prevData) => [...prevData.slice(-99), payload.data]);
+                        setData((prevData) => [...prevData.slice(-10), payload.data]);
                     },
                     onError: (error) => console.error("Ошибка:", error),
                     onComplete: () => console.log("Поток завершен"),

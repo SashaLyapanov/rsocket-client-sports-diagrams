@@ -22,11 +22,11 @@ ChartJS.register(
     Legend
 );
 
-const ChartVisualization = ({data, coach_id}) => {
+const ChartVisualization = ({data, sportsmanFIO}) => {
     const chartRef = useRef(null);
-
+    console.log(data?.map((item) => (item.recordedAt)));
     const chartData = {
-        labels: data?.map((item) => new Date(item.recordedAt).toLocaleTimeString()) || [],
+        labels: data?.map((item) => new Date(item.recordedAt[0], item.recordedAt[1], item.recordedAt[2], item.recordedAt[3], item.recordedAt[4], item.recordedAt[5]).toLocaleTimeString()) || [],
         datasets: [
             {
                 label: "Пульс",
@@ -64,7 +64,7 @@ const ChartVisualization = ({data, coach_id}) => {
             },
             title: {
                 display: true,
-                text: `Показатели спортсмена`,
+                text: `Показатели спортсмена ${sportsmanFIO}`,
             },
         },
         scales: {
@@ -89,9 +89,32 @@ const ChartVisualization = ({data, coach_id}) => {
         }
     }, [data]);
 
+    const pointLabelPlugin = {
+        id: "pointLabel",
+        afterDatasetsDraw(chart) {
+            const ctx = chart.ctx;
+            chart.data.datasets.forEach((dataset, datasetIndex) => {
+                const meta = chart.getDatasetMeta(datasetIndex);
+                meta.data.forEach((point, index) => {
+                    const value = dataset.data[index];
+                    const x = point.x;
+                    const y = point.y;
+
+                    ctx.save();
+                    ctx.font = "12px Arial";
+                    ctx.fillStyle = "black";
+                    ctx.textAlign = "center";
+                    ctx.fillText(value, x, y - 10); // Текст над точкой
+                    ctx.restore();
+                });
+            });
+        },
+    };
+
+
     return (
         <div style={{width: "90%", height: "400px"}}>
-            <Line ref={chartRef} data={chartData} options={chartOptions}/>
+            <Line ref={chartRef} data={chartData} options={chartOptions} plugins={[pointLabelPlugin]}/>
         </div>
     );
 };
