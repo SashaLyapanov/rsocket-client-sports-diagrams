@@ -24,7 +24,6 @@ ChartJS.register(
 
 const ChartVisualization = ({data, sportsmanFIO}) => {
     const chartRef = useRef(null);
-    console.log(data?.map((item) => (item.recordedAt)));
     const chartData = {
         labels: data?.map((item) => new Date(item.recordedAt[0], item.recordedAt[1], item.recordedAt[2], item.recordedAt[3], item.recordedAt[4], item.recordedAt[5]).toLocaleTimeString()) || [],
         datasets: [

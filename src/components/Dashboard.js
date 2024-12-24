@@ -5,8 +5,9 @@ import RSocketWebSocketClient from "rsocket-websocket-client/build";
 import ChartVisualization from "./ChartVisualization";
 
 const Dashboard = () => {
-    const { coachId } = useParams();
+    const {coachId} = useParams();
     const [data, setData] = useState([]);
+    const [groupedData, setGroupedData] = useState([]);
 
     useEffect(() => {
         const connectAndSubscribe = async () => {
@@ -50,8 +51,8 @@ const Dashboard = () => {
                     },
                     onNext: (payload) => {
                         console.log("Получены данные:", payload.data);
-                        // setData((prevData) => [...prevData.slice(-99), payload.data]);
-                        setData((prevData) => [...prevData.slice(-10), payload.data]);
+                        setData((prevData) => [...prevData.slice(-99), payload.data]);
+                        // setData((prevData) => [...prevData.slice(-10), payload.data]);
                     },
                     onError: (error) => console.error("Ошибка:", error),
                     onComplete: () => console.log("Поток завершен"),
@@ -75,10 +76,46 @@ const Dashboard = () => {
         };
     }, [coachId]);
 
+    useEffect(() => {
+        const newGroupedData = data.reduce((acc, item) => {
+            const sportsmanId = item.sportsmanId;
+            if (!acc[sportsmanId]) {
+                acc[sportsmanId] = [];
+            }
+            acc[sportsmanId].push(item);
+            return acc;
+        }, {});
+
+        const sortedGroupedData = Object.keys(newGroupedData)
+            .sort((a, b) => {
+                const fioA = newGroupedData[a][0]?.fio || "";
+                const fioB = newGroupedData[b][0]?.fio || "";
+                return fioA.localeCompare(fioB);
+            })
+            .reduce((acc, sportsmanId) => {
+                acc[sportsmanId] = newGroupedData[sportsmanId];
+                return acc;
+            }, {});
+
+        setGroupedData(sortedGroupedData);
+    }, [data]);
+
+    console.log(data);
+
     return (
         <div>
             <h1>Данные для тренера: {coachId}</h1>
-            <ChartVisualization data={data} coach_id={coachId} />
+            <div className="flexim">
+                {Object.keys(groupedData).map((sportsmanId) => (
+                    <div className="dashboard" key={sportsmanId}>
+                        <ChartVisualization
+                            key={sportsmanId}
+                            data={groupedData[sportsmanId]}
+                            sportsmanFIO={groupedData[sportsmanId][0]?.fio}
+                        />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 
