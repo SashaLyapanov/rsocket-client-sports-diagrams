@@ -32,6 +32,12 @@
     border: 1px solid #ccc;
 }
 
+.inputfieldfortime {
+    padding: 10px;
+    font-size: 1rem;
+    margin: 10px 0;
+}
+
 .button {
     padding: 10px 20px;
     font-size: 1rem;

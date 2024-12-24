@@ -3,6 +3,7 @@ import {useParams} from "react-router";
 import {JsonSerializer, IdentitySerializer, RSocketClient} from "rsocket-core";
 import RSocketWebSocketClient from "rsocket-websocket-client/build";
 import ChartVisualization from "./ChartVisualization";
+import InfoAboutSportsmanByTime from "./InfoAboutSportsmanByTime";
 
 const Dashboard = () => {
     const {coachId} = useParams();
@@ -115,6 +116,9 @@ const Dashboard = () => {
                         />
                     </div>
                 ))}
+            </div>
+            <div>
+                <InfoAboutSportsmanByTime coachId={coachId}/>
             </div>
         </div>
     );
