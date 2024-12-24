@@ -2,10 +2,11 @@ import {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {JsonSerializer, IdentitySerializer, RSocketClient} from "rsocket-core";
 import RSocketWebSocketClient from "rsocket-websocket-client/build";
+import ChartVisualization from "./ChartVisualization";
 
 const Dashboard = () => {
     const { coachId } = useParams();
-    const [data, setData] = useState();
+    const [data, setData] = useState([]);
 
     useEffect(() => {
         // Асинхронная функция внутри useEffect
@@ -37,7 +38,7 @@ const Dashboard = () => {
                 }
 
                 // Кодируем метаданные в байты и добавляем длину
-                const metadataString = "fetch-coach-data";
+                // const metadataString = "fetch-coach-data";
 
                 console.log(JSON.stringify({coachId}))
 
@@ -48,11 +49,15 @@ const Dashboard = () => {
                 }).subscribe({
                     onSubscribe: sub => {
                         console.log("Start")
-                        sub.request(Number.MAX_SAFE_INTEGER);
+                        // sub.request(Number.MAX_SAFE_INTEGER);
+                        sub.request(2147483647);
                     },
                     onNext: (payload) => {
                         console.log("Получены данные:", payload.data);
-                        setData((prevData) => [...prevData, payload.data]);
+                        // setData((prevData) => [...prevData, payload.data]);
+                        // const newData = JSON.parse(payload.data);
+                        // setData((prevData) => [...prevData.slice(-99), newData]);
+                        setData((prevData) => [...prevData.slice(-99), payload.data]);
                     },
                     onError: (error) => console.error("Ошибка:", error),
                     onComplete: () => console.log("Поток завершен"),
@@ -79,7 +84,7 @@ const Dashboard = () => {
     return (
         <div>
             <h1>Данные для тренера: {coachId}</h1>
-            <p>Привеь :: {data}</p>
+            <ChartVisualization data={data} coach_id={coachId} />
         </div>
     );
 
